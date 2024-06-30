@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ErrorHandling {
+    address public owner;
+    uint256 public value;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Function to set a value, demonstrating require()
+    function setValue(uint256 _value) public {
+        require(_value > 0, "Value must be greater than zero");
+        value = _value;
+    }
+
+    // Function to assert the owner's address
+    function checkOwner() public view {
+        assert(owner == msg.sender);
+    }
+
+    // Function to demonstrate revert()
+    function divide(uint256 _numerator, uint256 _denominator) public pure returns (uint256) {
+        if (_denominator == 0) {
+            revert("Denominator cannot be zero");
+        }
+        return _numerator / _denominator;
+    }
+
+    // Function to demonstrate multiple checks and revert() with a custom error
+    function safeDivide(uint256 _numerator, uint256 _denominator) public pure returns (uint256) {
+        if (_denominator == 0) {
+            revert("Cannot divide by zero");
+        }
+        uint256 result = _numerator / _denominator;
+        require(result >= 0, "Result must be non-negative");
+        return result;
+    }
+
+    // Function to update the owner's address, demonstrating onlyOwner modifier and assert
+    function updateOwner(address _newOwner) public onlyOwner {
+        owner = _newOwner;
+        assert(owner == _newOwner); // Check if the update was successful
+    }
+
+    // Modifier to check if the caller is the owner
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+}
